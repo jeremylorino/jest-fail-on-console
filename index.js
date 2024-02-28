@@ -14,6 +14,7 @@ const defaultErrorMessage = (methodName, bold) =>
   )}(console, '${methodName}').mockImplementation() and test that the warning occurs.`
 
 const init = ({
+  logInstance = console,
   errorMessage = defaultErrorMessage,
   shouldFailOnAssert = false,
   shouldFailOnDebug = false,
@@ -98,7 +99,7 @@ const init = ({
 
     const newMethod = methods[methodName] || captureMessage
 
-    let originalMethod = console[methodName]
+    let originalMethod = logInstance[methodName]
 
     const canSkipTest = () => {
       const currentTestState = expect.getState()
@@ -115,7 +116,7 @@ const init = ({
       shouldSkipTest = canSkipTest()
       if (shouldSkipTest) return
 
-      console[methodName] = newMethod // eslint-disable-line no-console
+      logInstance[methodName] = newMethod
       unexpectedConsoleCallStacks.length = 0
     })
 
@@ -123,7 +124,7 @@ const init = ({
       if (shouldSkipTest) return
 
       flushUnexpectedConsoleCalls(methodName, unexpectedConsoleCallStacks)
-      console[methodName] = originalMethod
+      logInstance[methodName] = originalMethod
     })
   }
 
